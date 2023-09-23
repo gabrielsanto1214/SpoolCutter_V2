@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "901447917641",
+    "firebase_url": "https://spoolcutter-default-rtdb.firebaseio.com",
+    "project_id": "spoolcutter",
+    "storage_bucket": "spoolcutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901447917641:android:7cd22302472bf4b878df98",
+        "android_client_info": {
+          "package_name": "com.PI.spoolcutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlK-jDreDSG8H-8oKpfyA2CwnucT-zhTc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901447917641:android:7aa5fffb344292b778df98",
+        "android_client_info": {
+          "package_name": "com.ifsc.pi.spoolcutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlK-jDreDSG8H-8oKpfyA2CwnucT-zhTc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
