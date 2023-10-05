@@ -42,7 +42,7 @@ import com.google.android.gms.common.api.ApiException;
 
 public class LoginFragment extends Fragment {
 
-    private LoginViewModel loginViewModel;
+   // private LoginViewModel loginViewModel;
     private FragmentLoginBinding binding;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
@@ -76,12 +76,10 @@ public class LoginFragment extends Fragment {
 
         mGoogleSignInClient = GoogleSignIn.getClient(requireContext(), gso);
 
-        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
-                .get(LoginViewModel.class);
+       // loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
+               // .get(LoginViewModel.class);
 
-        final EditText usernameEditText = binding.username;
-        final EditText passwordEditText = binding.password;
-        final Button loginButton = binding.login;
+
         final ProgressBar loadingProgressBar = binding.loading;
         final Button btnGoogle = binding.BtnGoogle;
 
@@ -89,25 +87,9 @@ public class LoginFragment extends Fragment {
         progressDialog.setMessage("Logging in with Google...");
         progressDialog.setCancelable(false);
 
-
         btnGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Tornar a barra de progresso visível
-                //loadingProgressBar.setVisibility(View.VISIBLE);
-                /*
-                progressDialog.show(); // Mostrar o pop-up de progresso
-
-
-                // Agendar uma ação para fechar o pop-up após 5 segundos
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressDialog.dismiss(); // Fechar o pop-up após 5 segundos
-                    }
-                }, 5000); // 5000 milissegundos = 5 segundos
-                */
-
                 // Iniciar o processo de login do Google
                 Intent signInIntent = mGoogleSignInClient.getSignInIntent();
                 startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -115,29 +97,6 @@ public class LoginFragment extends Fragment {
         });
 
         // Resto do seu código permanece o mesmo
-    }
-
-    // Método para autenticar com o Firebase usando as credenciais do Google
-    private void firebaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(requireActivity(), new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressDialog.dismiss(); // Fechar o pop-up de progresso
-
-                        if (task.isSuccessful()) {
-                            // Login bem-sucedido
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            // Faça qualquer ação adicional aqui, como atualizar a UI
-                        } else {
-                            // Login falhou
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            // Exibir uma mensagem de erro para o usuário
-                            Toast.makeText(requireContext(), "Login failed", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
     }
 
     // Método onActivityResult para lidar com o resultado do login do Google
@@ -160,6 +119,35 @@ public class LoginFragment extends Fragment {
                 Toast.makeText(requireContext(), "Google sign in failed", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    // Método para autenticar com o Firebase usando as credenciais do Google
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(requireActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressDialog.dismiss(); // Fechar o pop-up de progresso
+
+                        if (task.isSuccessful()) {
+                            // Login bem-sucedido
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            // Exibir a mensagem de boas-vindas
+                            String welcomeMessage = "Bem-vindo, " + user.getDisplayName() + "!";
+                            TextView welcomeTextView = binding.welcomeMessage;
+                            welcomeTextView.setText(welcomeMessage);
+
+                            // Faça qualquer ação adicional aqui, como atualizar a UI
+                        } else {
+                            // Login falhou
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            // Exibir uma mensagem de erro para o usuário
+                            Toast.makeText(requireContext(), "Login failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     // Método onDestroyView para limpar o Handler

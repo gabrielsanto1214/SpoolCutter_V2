@@ -13,7 +13,20 @@
           "package_name": "com.PI.spoolcutter"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "901447917641-c12m82h2ua5q2h4c2fpfgkirempr1ql2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.PI.spoolcutter",
+            "certificate_hash": "1dba16647d9b45ae45ceecde88f31a793bba79a2"
+          }
+        },
+        {
+          "client_id": "901447917641-cmkc516jjjg4br5ii4gdbodatvhmkd9b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAlK-jDreDSG8H-8oKpfyA2CwnucT-zhTc"
@@ -21,26 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:901447917641:android:7aa5fffb344292b778df98",
-        "android_client_info": {
-          "package_name": "com.ifsc.pi.spoolcutter"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAlK-jDreDSG8H-8oKpfyA2CwnucT-zhTc"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "901447917641-cmkc516jjjg4br5ii4gdbodatvhmkd9b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

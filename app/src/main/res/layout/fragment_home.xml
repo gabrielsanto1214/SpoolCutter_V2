@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="57dp"
+        android:layout_height="73dp"
+        android:tintMode="src_in"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/nav_host_fragment_activity_main"
+        app:srcCompat="@android:drawable/stat_sys_data_bluetooth"
+        app:tint="@color/blue" />
+
     <EditText
         android:id="@+id/editTextNumber2"
         android:layout_width="247dp"
@@ -24,6 +34,7 @@
         android:id="@+id/textView2"
         android:layout_width="119dp"
         android:layout_height="22dp"
+        android:layout_marginTop="20dp"
         android:text="Comprimento mm:"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,6 +47,7 @@
         android:id="@+id/textView"
         android:layout_width="121dp"
         android:layout_height="16dp"
+        android:layout_marginTop="20dp"
         android:text="Numero de rolos"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
