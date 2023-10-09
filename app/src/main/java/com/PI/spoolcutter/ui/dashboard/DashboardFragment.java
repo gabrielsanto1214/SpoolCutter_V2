@@ -99,31 +99,14 @@ public class DashboardFragment extends Fragment {
                                         int novoValor = numProd + valorC[0]; // Acesse o valor modificado
                                         numeroProducaoFinal[0] = String.valueOf(novoValor);
 
-                                        // Crie um objeto de mapa com os dados que você deseja enviar
-                                        Map<String, Object> dados = new HashMap<>();
-                                        dados.put("email", email);
-                                        dados.put("data_atual", dataAtual);
-                                        dados.put("numero_producao", numeroProducaoFinal[0]);
+                                        atualizarDadosFirestore("Teste", empresa, email, dataAtual, numeroProducaoFinal[0]);
 
-                                        // Exiba os dados no TextView
-                                        displayMessage("Email: " + dados.get("email") + "\nNúmero de Produção: " + dados.get("numero_producao") + "\nData Atual: " + dados.get("data_atual"));
-
-                                        // Adicione os dados ao Firestore
-                                        db.collection("Teste/"+empresa+"/"+ email).document(dataAtual).set(dados)
-                                                .addOnSuccessListener(documentReference -> {
-                                                    // Exiba uma mensagem de sucesso
-                                                    displayMessage("Dados enviados com sucesso para o Firestore");
-                                                })
-                                                .addOnFailureListener(e -> {
-                                                    // Exiba uma mensagem de erro
-                                                    displayMessage("Erro ao enviar dados para o Firestore: " + e.getMessage());
-                                                    Log.e("Firestore", "Erro ao enviar dados para o Firestore", e);
-                                                });
                                     } else {
                                         displayMessage("Campo não encontrado");
                                     }
                                 } else {
                                     displayMessage("Documento não encontrado");
+                                    atualizarDadosFirestore("Teste", empresa, email, dataAtual, numeroProducao);
                                 }
                             })
                             .addOnFailureListener(e -> {
@@ -155,5 +138,29 @@ public class DashboardFragment extends Fragment {
                 textViewMessage.setVisibility(View.VISIBLE); // Torna o TextView visível
             }
         });
+    }
+
+    private void atualizarDadosFirestore(String caminhoDocumento, String empresa, String email, String dataAtual, String numProd) {
+
+            // Crie um objeto de mapa com os dados que você deseja enviar
+            Map<String, Object> dados = new HashMap<>();
+            dados.put("email", email);
+            dados.put("data_atual", dataAtual);
+            dados.put("numero_producao", numProd);
+
+            // Exiba os dados no TextView
+            displayMessage("Email: " + dados.get("email") + "\nNúmero de Produção: " + dados.get("numero_producao") + "\nData Atual: " + dados.get("data_atual"));
+
+            // Adicione os dados ao Firestore
+            db.collection(caminhoDocumento+"/"+empresa+"/"+ email).document(dataAtual).set(dados)
+                    .addOnSuccessListener(documentReference -> {
+                        // Exiba uma mensagem de sucesso
+                        displayMessage("Dados enviados com sucesso para o Firestore");
+                    })
+                    .addOnFailureListener(e -> {
+                        // Exiba uma mensagem de erro
+                        displayMessage("Erro ao enviar dados para o Firestore: " + e.getMessage());
+                        Log.e("Firestore", "Erro ao enviar dados para o Firestore", e);
+                    });
     }
 }
