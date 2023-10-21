@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- mobile_navigation.xml -->
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,19 +12,24 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_chart"
         android:name="com.PI.spoolcutter.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
+        android:label="@string/title_chart"
         tools:layout="@layout/fragment_dashboard" />
 
-    <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.PI.spoolcutter.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+
     <fragment
         android:id="@+id/navigation_login"
         android:name="com.PI.spoolcutter.ui.login.LoginFragment"
         android:label="@string/title_login"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_login" />
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.PI.spoolcutter.ui.settings.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings" />
+
+
+
 </navigation>

@@ -15,4 +15,16 @@
     <string name="login_failed">"Login failed"</string>
 
     <string name="default_web_client_id">901447917641-cmkc516jjjg4br5ii4gdbodatvhmkd9b.apps.googleusercontent.com</string>
+    <string name="title_ble">Bluetooth</string>
+    <string name="title_settings">Configurações</string>
+    <string name="title_chart">Gráficos</string>
+
+    <!-- Mensagens de erro -->
+    <string name="empty_field_error">Verifique os campos vazios</string>
+    <string name="login_required_error">Faça login para enviar dados</string>
+    <string name="data_send_error">Erro ao enviar dados para o Firestore: </string>
+    <string name="read_document_error">Erro ao ler o documento: </string>
+
+    <!-- Mensagem de sucesso -->
+    <string name="data_sent_success">Dados enviados com sucesso para o Firestore</string>
 </resources>

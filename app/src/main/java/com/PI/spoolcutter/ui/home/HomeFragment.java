@@ -4,13 +4,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
+import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
+import androidx.navigation.Navigation;
+import com.PI.spoolcutter.R; // Certifique-se de importar corretamente o R
 import com.PI.spoolcutter.databinding.FragmentHomeBinding;
+import com.PI.spoolcutter.ui.home.HomeViewModel;
 
 public class HomeFragment extends Fragment {
 

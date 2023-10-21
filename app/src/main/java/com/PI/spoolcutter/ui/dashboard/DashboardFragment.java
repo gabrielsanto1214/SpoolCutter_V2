@@ -69,19 +69,19 @@ public class DashboardFragment extends Fragment {
                     String email = user.getEmail();
                     String numeroProducao = editTextProductionNumber.getText().toString();
                     String empresa = "Orange";
-                    int numProd = Integer.parseInt(numeroProducao);
 
                     // Verifique se o número de produção não está vazio
                     if (numeroProducao.isEmpty()) {
                         displayMessage("Digite o número de produção"); // Exibe uma mensagem de erro
-                        return;
+                        return; // Saia do método para evitar exceção
                     }
 
+                    int numProd = Integer.parseInt(numeroProducao);
                     // Obtenha a data atual (pode ser uma string no formato que você preferir)
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                     String dataAtual = dateFormat.format(new Date());
 
-                    String caminhoDocumento = "Teste/"+empresa+"/"+ email+"/"+ dataAtual; // Substitua pelo caminho real do documento
+                    String caminhoDocumento = "Teste/" + empresa + "/" + email + "/" + dataAtual; // Substitua pelo caminho real do documento
                     String campoParaLer = "numero_producao"; // Substitua pelo nome real do campo que deseja ler
 
                     final int[] valorC = {0}; // Crie uma variável final (array) para armazenar o valor
@@ -114,9 +114,11 @@ public class DashboardFragment extends Fragment {
                                 displayMessage("Erro ao ler o documento: " + e.getMessage());
                                 Log.e("Firestore", "Erro ao ler o documento", e);
                             });
-                } else {
+
+                } else{
                     displayMessage("Faça login para enviar dados"); // Exibe uma mensagem se o usuário não estiver autenticado
                 }
+
             }
         });
 
