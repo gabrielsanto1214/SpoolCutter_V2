@@ -14,18 +14,26 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.PI.spoolcutter.R;
 import com.PI.spoolcutter.databinding.FragmentDashboardBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DashboardFragment extends Fragment {
 
@@ -35,92 +43,42 @@ public class DashboardFragment extends Fragment {
     private TextView firebaseData;
     private EditText editTextProductionNumber;
     private TextView textViewMessage;
-    private Handler handler;
+    private Handler handler = new Handler();
+    private Handler updateHandler = new Handler();
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        DashboardViewModel dashboardViewModel =
-                new ViewModelProvider(this).get(DashboardViewModel.class);
+    private Runnable updateRunnable;
 
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+    private String CaminhoDocumento;
+    private String CaminhoDados;
+    private String CampoParaLer;
 
-        final TextView textView = binding.textDashboard;
-        final Button button = binding.button2;
-        firebaseData = root.findViewById(R.id.firebase_data);
-        editTextProductionNumber = root.findViewById(R.id.editTextProductionNumber);
-        textViewMessage = root.findViewById(R.id.textViewMessage);
+    private RecyclerView recyclerView;
+    private DashboardAdapter adapter;
 
-        // Inicialize o Firebase Authentication
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+
+        // Definir destinos
+        String empresa = "Orange";
+        CaminhoDocumento = "Teste/" + empresa + "/Dispositivo";
+        CampoParaLer = "Processo";
+        CaminhoDados = CaminhoDocumento + "/" + CampoParaLer + "/Dados";
+
+        recyclerView = root.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        adapter = new DashboardAdapter(generateSampleData());
+        recyclerView.setAdapter(adapter);
+
+
+        // Inicializar Firebase Authentication
         auth = FirebaseAuth.getInstance();
-        // Inicialize o Firebase Firestore
+        // Inicializar Firebase Firestore
         db = FirebaseFirestore.getInstance();
 
-        // Crie um handler para manipular a exibição de mensagens
-        handler = new Handler(Looper.getMainLooper());
+        getDadosFirestore();
+        // Verificar e criar campos no Firestore, se necessário
+        startPeriodicUpdate();
 
-        // Define o clique do botão
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Obtenha o usuário atualmente autenticado
-                FirebaseUser user = auth.getCurrentUser();
-                if (user != null) {
-                    String email = user.getEmail();
-                    String numeroProducao = editTextProductionNumber.getText().toString();
-                    String empresa = "Orange";
-
-                    // Verifique se o número de produção não está vazio
-                    if (numeroProducao.isEmpty()) {
-                        displayMessage("Digite o número de produção"); // Exibe uma mensagem de erro
-                        return; // Saia do método para evitar exceção
-                    }
-
-                    int numProd = Integer.parseInt(numeroProducao);
-                    // Obtenha a data atual (pode ser uma string no formato que você preferir)
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                    String dataAtual = dateFormat.format(new Date());
-
-                    String caminhoDocumento = "Teste/" + empresa + "/" + email + "/" + dataAtual; // Substitua pelo caminho real do documento
-                    String campoParaLer = "numero_producao"; // Substitua pelo nome real do campo que deseja ler
-
-                    final int[] valorC = {0}; // Crie uma variável final (array) para armazenar o valor
-                    final String[] numeroProducaoFinal = {numeroProducao}; // Crie uma variável final (array) para armazenar numeroProducao
-
-                    // Crie uma referência para o documento e leia o campo desejado
-                    db.document(caminhoDocumento).get()
-                            .addOnSuccessListener(documentSnapshot -> {
-                                if (documentSnapshot.exists()) {
-                                    // O documento existe, agora você pode ler o campo específico
-                                    String valorCampo = documentSnapshot.getString(campoParaLer);
-
-                                    if (valorCampo != null) {
-                                        valorC[0] = Integer.parseInt(valorCampo); // Modifique o valor dentro do array
-                                        int novoValor = numProd + valorC[0]; // Acesse o valor modificado
-                                        numeroProducaoFinal[0] = String.valueOf(novoValor);
-
-                                        atualizarDadosFirestore("Teste", empresa, email, dataAtual, numeroProducaoFinal[0]);
-
-                                    } else {
-                                        displayMessage("Campo não encontrado");
-                                    }
-                                } else {
-                                    displayMessage("Documento não encontrado");
-                                    atualizarDadosFirestore("Teste", empresa, email, dataAtual, numeroProducao);
-                                }
-                            })
-                            .addOnFailureListener(e -> {
-                                // Exiba uma mensagem de erro
-                                displayMessage("Erro ao ler o documento: " + e.getMessage());
-                                Log.e("Firestore", "Erro ao ler o documento", e);
-                            });
-
-                } else{
-                    displayMessage("Faça login para enviar dados"); // Exibe uma mensagem se o usuário não estiver autenticado
-                }
-
-            }
-        });
 
         return root;
     }
@@ -131,38 +89,72 @@ public class DashboardFragment extends Fragment {
         binding = null;
     }
 
-    // Método para exibir mensagens no TextView em uma thread de IU
-    private void displayMessage(String message) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                textViewMessage.setText(message);
-                textViewMessage.setVisibility(View.VISIBLE); // Torna o TextView visível
-            }
-        });
+
+    private List<DashboardItem> generateSampleData() {
+        List<DashboardItem> data = new ArrayList<>();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
+        //data.add(new DashboardItem(currentDate, "0"));
+
+        return data;
     }
 
-    private void atualizarDadosFirestore(String caminhoDocumento, String empresa, String email, String dataAtual, String numProd) {
+    private void startPeriodicUpdate() {
+        updateRunnable = new Runnable() {
+            @Override
+            public void run() {
+                getDadosFirestore();
+                checkStatusAndScheduleUpdate();
+            }
+        };
 
-            // Crie um objeto de mapa com os dados que você deseja enviar
-            Map<String, Object> dados = new HashMap<>();
-            dados.put("email", email);
-            dados.put("data_atual", dataAtual);
-            dados.put("numero_producao", numProd);
+        // Agende a execução do Runnable com um atraso inicial de 0 (ou o valor que você preferir)
+        updateHandler.postDelayed(updateRunnable, 1000); //delay de 1 segundos
+    }
 
-            // Exiba os dados no TextView
-            displayMessage("Email: " + dados.get("email") + "\nNúmero de Produção: " + dados.get("numero_producao") + "\nData Atual: " + dados.get("data_atual"));
+    private void checkStatusAndScheduleUpdate() {
 
-            // Adicione os dados ao Firestore
-            db.collection(caminhoDocumento+"/"+empresa+"/"+ email).document(dataAtual).set(dados)
-                    .addOnSuccessListener(documentReference -> {
-                        // Exiba uma mensagem de sucesso
-                        displayMessage("Dados enviados com sucesso para o Firestore");
-                    })
-                    .addOnFailureListener(e -> {
-                        // Exiba uma mensagem de erro
-                        displayMessage("Erro ao enviar dados para o Firestore: " + e.getMessage());
-                        Log.e("Firestore", "Erro ao enviar dados para o Firestore", e);
-                    });
+        updateHandler.postDelayed(updateRunnable, 1000); //delay entre processos 1 segundo
+
+    }
+
+    private void stopPeriodicUpdate() {
+        updateHandler.removeCallbacks(updateRunnable);
+    }
+
+
+    private void getDadosFirestore() {
+        db.collection(CaminhoDados) // Acesse a coleção no caminho /Teste/Orange/Dispositivo/Processo/Dados
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<DashboardItem> data = new ArrayList<>(); // Crie uma nova lista para armazenar os dados
+
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        // Para cada documento dentro da coleção, obtenha os dados de data e produção
+                        String dataProduzida = document.getId(); // O ID do documento é a data produzida
+                        String producaoDoDia = document.getString("Producao"); // Substitua "producao" pelo nome do campo no Firestore
+
+                        // Log dos dados
+                        Log.d("Firestore", "Data Produzida: " + dataProduzida);
+                        Log.d("Firestore", "Produção do Dia: " + producaoDoDia);
+
+                        if(Integer.parseInt(producaoDoDia)>0){
+                            // Crie um objeto DashboardItem com os dados e adicione-o à lista
+                            DashboardItem item = new DashboardItem(dataProduzida, producaoDoDia);
+                            data.add(item);
+
+                        }
+
+                    }
+
+                    // Inverta a ordem dos itens
+                    Collections.reverse(data);
+                    // Atualize o adaptador com os dados obtidos do Firestore
+                    adapter.setData(data);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", getString(R.string.read_document_error), e);
+                });
     }
 }
