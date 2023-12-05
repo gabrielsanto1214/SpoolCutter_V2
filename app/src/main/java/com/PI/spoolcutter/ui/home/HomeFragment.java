@@ -143,7 +143,7 @@ public class HomeFragment extends Fragment {
         String dataAtual = dateFormat.format(new Date());
         Map<String, Object> prod = new HashMap<>();
         prod.put("Producao", textViewProducao.getText());
-        prod.put("Data", dataAtual);
+        prod.put("Data", dataAtual );
 
 
         db.collection(CaminhoDados).document(dataAtual).set(prod)
